@@ -31,46 +31,46 @@ data class Event(
     var awayId: String? = null,
 
     @SerializedName("strHomeGoalDetails")
-    val homeGoalDetails: String? = null,
+    var homeGoalDetails: String? = null,
 
     @SerializedName("strAwayGoalDetails")
-    val awayGoalDetails: String? = null,
+    var awayGoalDetails: String? = null,
 
     @SerializedName("intHomeShots")
-    val homeShots: Int? = null,
+    var homeShots: String? = null,
 
     @SerializedName("intAwayShots")
-    val awayShots: Int? = null,
+    var awayShots: String? = null,
 
     @SerializedName("strHomeLineupGoalkeeper")
-    val homeGoalKeeper: String? = null,
+    var homeGoalKeeper: String? = null,
 
     @SerializedName("strAwayLineupGoalkeeper")
-    val awayGoalKeeper: String? = null,
+    var awayGoalKeeper: String? = null,
 
     @SerializedName("strHomeLineupDefense")
-    val homeDefense: String? = null,
+    var homeDefense: String? = null,
 
     @SerializedName("strAwayLineupDefense")
-    val awayDefense: String? = null,
+    var awayDefense: String? = null,
 
     @SerializedName("strHomeLineupMidfield")
-    val homeMidfield: String? = null,
+    var homeMidfield: String? = null,
 
     @SerializedName("strAwayLineupMidfield")
-    val awayMidfield: String? = null,
+    var awayMidfield: String? = null,
 
     @SerializedName("strHomeLineupForward")
-    val homeForward: String? = null,
+    var homeForward: String? = null,
 
     @SerializedName("strAwayLineupForward")
-    val awayForward: String? = null,
+    var awayForward: String? = null,
 
     @SerializedName("strHomeLineupSubstitutes")
-    val homeSubtitutes: String? = null,
+    var homeSubtitutes: String? = null,
 
     @SerializedName("strAwayLineupSubstitutes")
-    val awaySubtitutes: String? = null
+    var awaySubtitutes: String? = null
 
 
 )

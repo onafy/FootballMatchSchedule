@@ -11,9 +11,12 @@
     <string name="detail_vs">vs</string>
     <string name="detail_composition">4-2-3-1</string>
     <string name="detail_composition2">3-2-1-2</string>
+    <string name="favorites">Favorites</string>
+
 
     <array name="eventtype">
         <item>Next Event</item>
         <item>Past Event</item>
+        <item>Favorites</item>
     </array>
 </resources>
