@@ -16,13 +16,22 @@ class MainPresenter(private val view: MainView,
     fun getEventList(matchschedule: String?) {
         view.showLoading()
         doAsync {
-            val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getEvents(matchschedule)),
-                    EventResponse::class.java)
-            Log.d(data.toString(), "data log presener")
+            if(matchschedule != "Favorites")
+            {
+                val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getEvents(matchschedule)),
+                        EventResponse::class.java)
+                Log.d(data.toString(), "data log presener")
+                uiThread {
+                    view.hideLoading()
+                    view.showEventList(data.events)
+                }
 
-            uiThread {
-                view.hideLoading()
-                view.showEventList(data.events)
+            }
+            else{
+                uiThread {
+                    view.hideLoading()
+                    view.showFav()
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.Menu
 import android.view.MenuItem
 import com.bumptech.glide.Glide
@@ -19,6 +20,7 @@ import onafy.footballmatchschedule.R.drawable.ic_added_to_favorites
 import onafy.footballmatchschedule.R.id.add_to_favorite
 import onafy.footballmatchschedule.R.menu.detail_menu
 import onafy.footballmatchschedule.R
+import onafy.footballmatchschedule.R.color.colorAccent
 import onafy.footballmatchschedule.Util.invisible
 import onafy.footballmatchschedule.Util.visible
 import org.jetbrains.anko.db.classParser
@@ -26,39 +28,24 @@ import org.jetbrains.anko.db.delete
 import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
 
 class DetailActivity : AppCompatActivity(), DetailView {
     //=================================== declaration ===========================================
-    private var teams: MutableList<Team> = mutableListOf()
-    private var events: MutableList<Event> = mutableListOf()
     private lateinit var homeTeamObj: Team
     private lateinit var awayTeamObj: Team
     private lateinit var presenter: DetailPresenter
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var id: String
+
     private var eventId: String = ""
-    private var homeName: String = ""
-    private var awayName : String = ""
     private var homeId: String = ""
     private var awayId : String = ""
-    private var homeScore: String = ""
-    private var awayScore : String = ""
-    private var homeGoals : String = ""
-    private var awayGoals : String = ""
-    private var homeShots: String = ""
-    private var awayShots : String = ""
-    private var homeGoalKeeper : String = ""
-    private var awayGoalKeeper : String = ""
-    private var homeDefense : String = ""
-    private var awayDefense : String = ""
-    private var homeMidfield : String = ""
-    private var awayMidfield : String = ""
-    private var homeForward : String = ""
-    private var awayForward : String = ""
-    private var homeSubtitutes : String = ""
-    private var awaySubtitutes: String = ""
     private var homeBadge: String = ""
     private var awayBadge: String = ""
     private var eventDate: String = ""
+
 
     private lateinit var eventdetail: Event
     private var menuItem: Menu? = null
@@ -69,31 +56,34 @@ class DetailActivity : AppCompatActivity(), DetailView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.detail_pastmatch)
-        eventId = intent.getStringExtra("eventId")
-        homeId = intent.getStringExtra("homeId")
-        awayId = intent.getStringExtra("awayId")
 
+        declaration()
         showActionBar()
+        favoriteState()
         val request = ApiRepository()
         val gson = Gson()
         presenter = DetailPresenter(this, request, gson)
         presenter.getTeamDetail(eventId, homeId, awayId)
+        swipeRefresh.onRefresh {
+            presenter.getTeamDetail(eventId, homeId, awayId)
+        }
 
     } //==========================================================================================
 
 
 
     // ============================= function ====================================================
-    private fun DefaultData(){
 
-        /*homeName = intent.getStringExtra("homeName")
-        awayName = intent.getStringExtra("awayName")
+    private fun declaration(){
+        eventId = intent.getStringExtra("eventId")
         homeId = intent.getStringExtra("homeId")
         awayId = intent.getStringExtra("awayId")
-        eventDate = intent.getStringExtra("date")*/
-        dateventTV.text = eventDate
-        homenameTV.text = homeName
-        awaynameTV.text = awayName
+
+        swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
+        swipeRefresh.setColorSchemeResources(colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light)
     }
 
     private fun showActionBar(){
@@ -103,6 +93,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
     }
 
     override fun showhomeImage(data: List<Team>) {
+        swipeRefresh.isRefreshing = false
         homeTeamObj = data[0]
         homeBadge = homeTeamObj.teamBadge
         Glide.with(this).load(homeBadge).into(homeImage)
@@ -110,36 +101,28 @@ class DetailActivity : AppCompatActivity(), DetailView {
     }
 
     override fun showawayImage(data: List<Team>) {
+        swipeRefresh.isRefreshing = false
         awayTeamObj = data[0]
         awayBadge = awayTeamObj.teamBadge
         Glide.with(this).load(awayBadge).into(awayImage)
     }
 
     override fun showDetail(data: List<Event>) {
-        eventdetail = Event(data[0].homeName,
+        swipeRefresh.isRefreshing = false
+        eventdetail = Event(data[0].eventId,
+                data[0].homeName,
                 data[0].awayName,
                 data[0].eventDate,
                 data[0].homeScore,
                 data[0].awayScore,
-                data[0].homeGoalDetails,
-                data[0].awayGoalDetails,
-                data[0].homeGoalKeeper,
-                data[0].awayGoalKeeper,
-                data[0].homeShots.toString(),
-                data[0].awayShots,
-                data[0].awayDefense,
-                data[0].homeMidfield,
-                data[0].awayMidfield,
-                data[0].homeForward,
-                data[0].awayForward,
-                data[0].homeSubtitutes,
-                data[0].awaySubtitutes)
+                data[0].homeId,
+                data[0].awayId)
 
         dateventTV.text = data[0].eventDate
         homenameTV.text = data[0].homeName
         awaynameTV.text = data[0].awayName
 
-        if(intent.getStringExtra("homeGoal")!=null)
+        if(data[0].homeGoalDetails !=null)
         {
             homescoreTV.text = data[0].homeScore
             awayscoreTV.text = data[0].awayScore
@@ -188,14 +171,63 @@ class DetailActivity : AppCompatActivity(), DetailView {
                 true
             }
             add_to_favorite -> {
-
+                if (isFavorite) removeFromFavorite() else addToFavorite()
+                isFavorite = !isFavorite
+                setFavorite()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private fun addToFavorite(){
+        try{
+            database.use{
+                insert(Favorite.TABLE_FAVORITE,
+                        Favorite.EVENT_ID to eventdetail.eventId,
+                        Favorite.HOME_NAME to eventdetail.homeName,
+                        Favorite.AWAY_NAME to eventdetail.awayName,
+                        Favorite.EVENT_DATE to eventdetail.eventDate,
+                        Favorite.HOME_SCORE to eventdetail.homeScore,
+                        Favorite.AWAY_SCORE to eventdetail.awayScore,
+                        Favorite.HOME_ID to eventdetail.homeId,
+                        Favorite.AWAY_ID to eventdetail.awayId)
+            }
+            snackbar(swipeRefresh, "Added to Favorite").show()
+        } catch (e: SQLiteConstraintException){
+            snackbar(swipeRefresh, e.localizedMessage).show()
+        }
+    }
+
+
+    private fun removeFromFavorite(){
+        try {
+            database.use {
+                delete(Favorite.TABLE_FAVORITE, "(EVENT_ID = {eventId})",
+                        "eventId" to eventId)
+            }
+            snackbar(swipeRefresh, "Removed to favorite").show()
+        } catch (e: SQLiteConstraintException){
+            snackbar(swipeRefresh, e.localizedMessage).show()
+        }
+    }
+
+    private fun setFavorite() {
+        if (isFavorite)
+            menuItem?.getItem(0)?.icon = ContextCompat.getDrawable(this, ic_added_to_favorites)
+        else
+            menuItem?.getItem(0)?.icon = ContextCompat.getDrawable(this, ic_add_to_favorites)
+    }
+
+    private fun favoriteState(){
+        database.use {
+            val result = select(Favorite.TABLE_FAVORITE)
+                    .whereArgs("(EVENT_ID = {eventId})",
+                            "eventId" to eventId)
+            val favorite = result.parseList(classParser<Favorite>())
+            if (!favorite.isEmpty()) isFavorite = true
+        }
+    }
 
 
 }

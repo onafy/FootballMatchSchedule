@@ -6,5 +6,6 @@ interface MainView {
         fun showLoading()
         fun hideLoading()
         fun showEventList(data: List<Event>)
+        fun showFav()
 
 }

@@ -20,8 +20,16 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
+import android.util.Log
+import onafy.footballmatchschedule.DBLokal.Favorite
+import onafy.footballmatchschedule.DBLokal.database
+import onafy.footballmatchschedule.Features.Favorites.FavoriteAdapter
+import org.jetbrains.anko.db.classParser
+import org.jetbrains.anko.db.select
+
 
 class MainActivity : AppCompatActivity(), MainView {
+    private var favorites: MutableList<Favorite> = mutableListOf()
     private var events: MutableList<Event> = mutableListOf()
     private lateinit var listEvent: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -29,6 +37,7 @@ class MainActivity : AppCompatActivity(), MainView {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var presenter: MainPresenter
     private lateinit var adapter: MainAdapter
+    private lateinit var adapter2: FavoriteAdapter
     private lateinit var eventType : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,9 +77,16 @@ class MainActivity : AppCompatActivity(), MainView {
             startActivity(intentFor<DetailActivity>(
                     "eventId" to it.eventId,
                     "homeId" to it.homeId,
-                    "awayId" to it.awayId,
-                    "homeGoal" to it.homeGoalDetails))
+                    "awayId" to it.awayId))
         }
+
+        adapter2 = FavoriteAdapter(ctx, favorites) {
+            startActivity(intentFor<DetailActivity>(
+                    "eventId" to it.eventId,
+                    "homeId" to it.homeId,
+                    "awayId" to it.awayId))
+        }
+
         listEvent.adapter = adapter
         val request = ApiRepository()
         val gson = Gson()
@@ -88,13 +104,31 @@ class MainActivity : AppCompatActivity(), MainView {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 events.clear()
                 eventType = spinner.selectedItem.toString()
+                if(eventType == "Favorites")
+                {
+                    listEvent.adapter = adapter2
+                }
+                else{
+                    listEvent.adapter = adapter
+
+                }
                 presenter.getEventList(eventType)
+
             }
         } //======================================================================================
 
 
         //================================== Swipe refresh ======================================
         swipeRefresh.onRefresh {
+            if(eventType == "Favorites")
+            {
+                listEvent.adapter = adapter2
+            }
+            else{
+                listEvent.adapter = adapter
+
+            }
+
             presenter.getEventList(eventType)
         } // ====================================================================================
     }
@@ -113,7 +147,24 @@ class MainActivity : AppCompatActivity(), MainView {
         events.clear()
         events.addAll(data)
         adapter.notifyDataSetChanged()
-    }// ==========================================================================================
+    }
+
+    override fun showFav() {
+            favorites.clear()
+            database.use {
+                swipeRefresh.isRefreshing = false
+                val result = select(Favorite.TABLE_FAVORITE)
+                val favorite = result.parseList(classParser<Favorite>())
+                favorites.addAll(favorite)
+                Log.d("favorite", favorites.toString())
+                Log.d("favorite2", favorite.toString())
+                adapter2.notifyDataSetChanged()
+                progressBar.invisible()
+            }
+    }
+
+
+// ==========================================================================================
 
 
 }
