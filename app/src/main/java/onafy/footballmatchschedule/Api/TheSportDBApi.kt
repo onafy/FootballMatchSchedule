@@ -4,21 +4,21 @@ import onafy.footballmatchschedule.BuildConfig
 
 object TheSportDBApi {
 
-    fun getEvents(matchschedule: String?): String {
-        var matchtype: String = ""
+    fun getEvents(matchSchedule: String?): String {
+        var matchType = ""
 
-        if(matchschedule == "Next Event")
+        if(matchSchedule == "Next Event")
         {
-            matchtype = "eventsnextleague.php"
+            matchType = "eventsnextleague.php"
         }
-        else if(matchschedule == "Past Event")
+        else if(matchSchedule == "Past Event")
         {
-            matchtype = "eventspastleague.php"
+            matchType = "eventspastleague.php"
         }
-        return BuildConfig.BASE_URL + "api/v1/json/${BuildConfig.TSDB_API_KEY}" + "/" + matchtype + "?id=4328"
+        return BuildConfig.BASE_URL + "api/v1/json/${BuildConfig.TSDB_API_KEY}" + "/" + matchType + "?id=4328"
     }
 
-    fun getTeamsbyId(teamId: String?): String{
+    fun getTeamsById(teamId: String?): String{
         return BuildConfig.BASE_URL + "api/v1/json/${BuildConfig.TSDB_API_KEY}" + "/lookupteam.php?id=" + teamId
     }
 

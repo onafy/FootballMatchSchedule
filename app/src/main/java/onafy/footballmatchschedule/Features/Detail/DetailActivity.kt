@@ -29,7 +29,6 @@ import org.jetbrains.anko.db.insert
 import org.jetbrains.anko.db.select
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.onRefresh
-import org.jetbrains.anko.support.v4.swipeRefreshLayout
 
 class DetailActivity : AppCompatActivity(), DetailView {
     //=================================== declaration ===========================================
@@ -37,20 +36,16 @@ class DetailActivity : AppCompatActivity(), DetailView {
     private lateinit var awayTeamObj: Team
     private lateinit var presenter: DetailPresenter
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var id: String
-
-    private var eventId: String = ""
+    private lateinit var eventId: String
     private var homeId: String = ""
     private var awayId : String = ""
     private var homeBadge: String = ""
     private var awayBadge: String = ""
-    private var eventDate: String = ""
-
-
     private lateinit var eventdetail: Event
     private var menuItem: Menu? = null
     private var isFavorite: Boolean = false
     //=============================================================================================
+
 
     //============================= main =========================================================
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +59,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
         val gson = Gson()
         presenter = DetailPresenter(this, request, gson)
         presenter.getTeamDetail(eventId, homeId, awayId)
+
         swipeRefresh.onRefresh {
             presenter.getTeamDetail(eventId, homeId, awayId)
         }
@@ -73,7 +69,6 @@ class DetailActivity : AppCompatActivity(), DetailView {
 
 
     // ============================= function ====================================================
-
     private fun declaration(){
         eventId = intent.getStringExtra("eventId")
         homeId = intent.getStringExtra("homeId")
@@ -92,20 +87,20 @@ class DetailActivity : AppCompatActivity(), DetailView {
         actionbar.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun showhomeImage(data: List<Team>) {
+    override fun showHomeImage(data: List<Team>) {
         swipeRefresh.isRefreshing = false
         homeTeamObj = data[0]
         homeBadge = homeTeamObj.teamBadge
         Glide.with(this).load(homeBadge).into(homeImage)
-
     }
 
-    override fun showawayImage(data: List<Team>) {
+    override fun showAwayImage(data: List<Team>) {
         swipeRefresh.isRefreshing = false
         awayTeamObj = data[0]
         awayBadge = awayTeamObj.teamBadge
         Glide.with(this).load(awayBadge).into(awayImage)
     }
+
 
     override fun showDetail(data: List<Event>) {
         swipeRefresh.isRefreshing = false
@@ -148,21 +143,25 @@ class DetailActivity : AppCompatActivity(), DetailView {
         progressBar.visible()
     }
 
+
     override fun hideLoading() {
         progressBar.invisible()
     }
+
 
     override fun onSupportNavigateUp() : Boolean{
         onBackPressed()
         return true
     }
-    // ===========================================================================================
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(detail_menu, menu)
         menuItem = menu
+        setFavorite()
         return true
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -179,6 +178,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
     private fun addToFavorite(){
         try{
@@ -212,6 +212,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
         }
     }
 
+
     private fun setFavorite() {
         if (isFavorite)
             menuItem?.getItem(0)?.icon = ContextCompat.getDrawable(this, ic_added_to_favorites)
@@ -219,15 +220,24 @@ class DetailActivity : AppCompatActivity(), DetailView {
             menuItem?.getItem(0)?.icon = ContextCompat.getDrawable(this, ic_add_to_favorites)
     }
 
+
     private fun favoriteState(){
-        database.use {
-            val result = select(Favorite.TABLE_FAVORITE)
-                    .whereArgs("(EVENT_ID = {eventId})",
-                            "eventId" to eventId)
-            val favorite = result.parseList(classParser<Favorite>())
-            if (!favorite.isEmpty()) isFavorite = true
+        try{
+            database.use {
+                val result = select(Favorite.TABLE_FAVORITE)
+                        .whereArgs("(EVENT_ID = {eventId})",
+                                "eventId" to eventId)
+                val favorite = result.parseList(classParser<Favorite>())
+                if (!favorite.isEmpty()) isFavorite = true
+            }
         }
+        catch (e: SQLiteConstraintException){
+            snackbar(swipeRefresh, e.localizedMessage).show()
+        }
+
     }
+
+    // ===========================================================================================
 
 
 }

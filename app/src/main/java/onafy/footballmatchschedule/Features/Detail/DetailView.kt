@@ -6,7 +6,7 @@ import onafy.footballmatchschedule.ModelDataClass.Team
 interface DetailView {
     fun showLoading()
     fun hideLoading()
-    fun showhomeImage(data: List<Team>)
-    fun showawayImage(data: List<Team>)
+    fun showHomeImage(data: List<Team>)
+    fun showAwayImage(data: List<Team>)
     fun showDetail(data: List<Event>)
 }

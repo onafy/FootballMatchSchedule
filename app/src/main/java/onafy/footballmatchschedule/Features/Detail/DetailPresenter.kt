@@ -14,20 +14,23 @@ class DetailPresenter(private val view: DetailView,
     fun getTeamDetail(eventId: String, homeId: String, awayId: String) {
         view.showLoading()
         doAsync {
+            //detail
             val detail = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getEventDetail(eventId)),
                     EventResponse::class.java)
+
             //home
-            val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getTeamsbyId(homeId)),
+            val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getTeamsById(homeId)),
                     TeamResponse::class.java)
+
             //away
-            val data2 = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getTeamsbyId(awayId)),
+            val data2 = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getTeamsById(awayId)),
                     TeamResponse::class.java)
 
 
             uiThread {
                 view.hideLoading()
-                view.showhomeImage(data.teams)
-                view.showawayImage(data2.teams)
+                view.showHomeImage(data.teams)
+                view.showAwayImage(data2.teams)
                 view.showDetail(detail.events)
 
             }

@@ -30,7 +30,9 @@ class EventViewHolder(view: View): RecyclerView.ViewHolder(view) {
     private val homeScore: TextView = view.find(R.id.homescoreTV)
     private val awayScore: TextView = view.find(R.id.awayscoreTV)
     private val awayName: TextView = view.find(R.id.awaynameTV)
-    fun bindItem(events: Event, listener: (Event) -> Unit) {
+
+    fun bindItem(events: Event, listener: (Event) -> Unit)
+    {
         homeName.text = events.homeName
         Log.d(events.homeName, "HomeName")
         eventDate.text = events.eventDate

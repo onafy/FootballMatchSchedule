@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity(), MainView {
         }//========================================================================================
 
         //================================== recyclerView ========================================
+        // this adapter is used for nextEvent and pastEvent
         adapter = MainAdapter(ctx, events) {
             startActivity(intentFor<DetailActivity>(
                     "eventId" to it.eventId,
@@ -80,6 +81,7 @@ class MainActivity : AppCompatActivity(), MainView {
                     "awayId" to it.awayId))
         }
 
+        //this adapter is used for favorite
         adapter2 = FavoriteAdapter(ctx, favorites) {
             startActivity(intentFor<DetailActivity>(
                     "eventId" to it.eventId,
@@ -93,7 +95,8 @@ class MainActivity : AppCompatActivity(), MainView {
         presenter = MainPresenter(this, request, gson)
         // =====================================================================================
 
-        // ================================= Spinner  ===========================================
+
+        // ================================= Spinner and Swipe  ===========================================
         val spinnerItems = resources.getStringArray(eventtype)
         val spinnerAdapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_dropdown_item, spinnerItems)
         spinner.adapter = spinnerAdapter
@@ -104,49 +107,33 @@ class MainActivity : AppCompatActivity(), MainView {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 events.clear()
                 eventType = spinner.selectedItem.toString()
-                if(eventType == "Favorites")
-                {
-                    listEvent.adapter = adapter2
-                }
-                else{
-                    listEvent.adapter = adapter
-
-                }
+                favOrNot()
                 presenter.getEventList(eventType)
-
             }
-        } //======================================================================================
+        }
 
-
-        //================================== Swipe refresh ======================================
         swipeRefresh.onRefresh {
-            if(eventType == "Favorites")
-            {
-                listEvent.adapter = adapter2
-            }
-            else{
-                listEvent.adapter = adapter
-
-            }
-
+            favOrNot()
             presenter.getEventList(eventType)
-        } // ====================================================================================
+        }
+        //======================================================================================
     }
 
-    // ===================================== MainView implementation ==============================
+
+    // ===================================== Function ==============================
     override fun showLoading() {
-        progressBar.visible()
+            progressBar.visible()
     }
 
     override fun hideLoading() {
-        progressBar.invisible()
+            progressBar.invisible()
     }
 
     override fun showEventList(data: List<Event>) {
-        swipeRefresh.isRefreshing = false
-        events.clear()
-        events.addAll(data)
-        adapter.notifyDataSetChanged()
+            swipeRefresh.isRefreshing = false
+            events.clear()
+            events.addAll(data)
+            adapter.notifyDataSetChanged()
     }
 
     override fun showFav() {
@@ -163,8 +150,13 @@ class MainActivity : AppCompatActivity(), MainView {
             }
     }
 
-
-// ==========================================================================================
+    private fun favOrNot(){
+            if(eventType == "Favorites")
+            { listEvent.adapter = adapter2 }
+            else
+            { listEvent.adapter = adapter }
+    }
+    // ==========================================================================================
 
 
 }
