@@ -5,12 +5,14 @@ import com.google.gson.Gson
 import onafy.footballmatchschedule.Api.ApiRepository
 import onafy.footballmatchschedule.Api.TheSportDBApi
 import onafy.footballmatchschedule.ModelDataClass.EventResponse
+import onafy.footballmatchschedule.Util.CoroutineContextProvider
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 class MainPresenter(private val view: MainView,
                     private val apiRepository: ApiRepository,
-                    private val gson: Gson) {
+                    private val gson: Gson,
+                    private val context: CoroutineContextProvider = CoroutineContextProvider()) {
 
 
     fun getEventList(matchschedule: String?) {
@@ -20,7 +22,6 @@ class MainPresenter(private val view: MainView,
             {
                 val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getEvents(matchschedule)),
                         EventResponse::class.java)
-                Log.d(data.toString(), "data log presener")
                 uiThread {
                     view.hideLoading()
                     view.showEventList(data.events)

@@ -44,6 +44,8 @@ class DetailActivity : AppCompatActivity(), DetailView {
     private lateinit var eventdetail: Event
     private var menuItem: Menu? = null
     private var isFavorite: Boolean = false
+
+
     //=============================================================================================
 
 
@@ -83,8 +85,8 @@ class DetailActivity : AppCompatActivity(), DetailView {
 
     private fun showActionBar(){
         val actionbar = supportActionBar
-        actionbar!!.title = "Detail"
-        actionbar.setDisplayHomeAsUpEnabled(true)
+        actionbar?.title = "Detail"
+        actionbar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun showHomeImage(data: List<Team>) {

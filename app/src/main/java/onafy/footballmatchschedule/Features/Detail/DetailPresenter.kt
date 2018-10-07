@@ -5,12 +5,14 @@ import onafy.footballmatchschedule.Api.ApiRepository
 import onafy.footballmatchschedule.Api.TheSportDBApi
 import onafy.footballmatchschedule.ModelDataClass.EventResponse
 import onafy.footballmatchschedule.ModelDataClass.TeamResponse
+import onafy.footballmatchschedule.Util.CoroutineContextProvider
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 class DetailPresenter(private val view: DetailView,
                       private val apiRepository: ApiRepository,
-                      private val gson: Gson) {
+                      private val gson: Gson,
+                      private val context: CoroutineContextProvider = CoroutineContextProvider()) {
     fun getTeamDetail(eventId: String, homeId: String, awayId: String) {
         view.showLoading()
         doAsync {

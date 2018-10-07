@@ -40,6 +40,13 @@ class MainActivity : AppCompatActivity(), MainView {
     private lateinit var adapter2: FavoriteAdapter
     private lateinit var eventType : String
 
+
+    companion object {
+        val idListEvent = 100
+        val idSwipeRefresh = 101
+        val idSpinner = 102
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,8 +58,11 @@ class MainActivity : AppCompatActivity(), MainView {
             leftPadding = dip(16)
             rightPadding = dip(16)
 
-            spinner = spinner()
+            spinner = spinner{
+                id = idSpinner
+            }
             swipeRefresh = swipeRefreshLayout{
+                id = idSwipeRefresh
                 setColorSchemeResources(R.color.colorAccent,
                         android.R.color.holo_green_light,
                         android.R.color.holo_orange_light,
@@ -60,7 +70,8 @@ class MainActivity : AppCompatActivity(), MainView {
                 relativeLayout{
                     lparams(width= matchParent, height= wrapContent)
 
-                    listEvent = recyclerView{
+                      listEvent = recyclerView{
+                          id = idListEvent
                         lparams(width= matchParent, height = wrapContent)
                         layoutManager = LinearLayoutManager(ctx)
                     }
