@@ -1,6 +1,5 @@
 package onafy.footballmatchschedule.Features.Main
 
-import android.util.Log
 import com.google.gson.Gson
 import onafy.footballmatchschedule.Api.ApiRepository
 import onafy.footballmatchschedule.Api.TheSportDBApi
@@ -18,8 +17,7 @@ class MainPresenter(private val view: MainView,
     fun getEventList(matchschedule: String?) {
         view.showLoading()
         doAsync {
-            if(matchschedule != "Favorites")
-            {
+            if (matchschedule != "Favorites") {
                 val data = gson.fromJson(apiRepository.doRequest(TheSportDBApi.getEvents(matchschedule)),
                         EventResponse::class.java)
                 uiThread {
@@ -27,8 +25,7 @@ class MainPresenter(private val view: MainView,
                     view.showEventList(data.events)
                 }
 
-            }
-            else{
+            } else {
                 uiThread {
                     view.hideLoading()
                     view.showFav()

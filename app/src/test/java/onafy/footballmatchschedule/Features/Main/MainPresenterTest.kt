@@ -6,9 +6,8 @@ import onafy.footballmatchschedule.Api.TheSportDBApi
 import onafy.footballmatchschedule.ModelDataClass.Event
 import onafy.footballmatchschedule.ModelDataClass.EventResponse
 import onafy.footballmatchschedule.TestContextProvider
-import org.junit.Test
-
 import org.junit.Before
+import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -17,7 +16,7 @@ class MainPresenterTest {
 
     @Mock
     private
-    lateinit var view:MainView
+    lateinit var view: MainView
 
     @Mock
     private
@@ -33,9 +32,9 @@ class MainPresenterTest {
     private lateinit var presenter: MainPresenter
 
     @Before
-    fun setUp(){
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
-        presenter = MainPresenter(view, apiRepository,gson, TestContextProvider())
+        presenter = MainPresenter(view, apiRepository, gson, TestContextProvider())
     }
 
 
@@ -52,7 +51,7 @@ class MainPresenterTest {
 
         presenter.getEventList(matchschedule)
 
-        if(events.isNotEmpty()){
+        if (events.isNotEmpty()) {
             Mockito.verify(view).showLoading()
             Mockito.verify(view).showEventList(events)
             Mockito.verify(view).hideLoading()

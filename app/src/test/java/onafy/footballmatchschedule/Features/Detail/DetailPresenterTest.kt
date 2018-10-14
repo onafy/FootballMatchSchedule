@@ -8,9 +8,8 @@ import onafy.footballmatchschedule.ModelDataClass.EventResponse
 import onafy.footballmatchschedule.ModelDataClass.Team
 import onafy.footballmatchschedule.ModelDataClass.TeamResponse
 import onafy.footballmatchschedule.TestContextProvider
-import org.junit.Test
-
 import org.junit.Before
+import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
@@ -33,10 +32,11 @@ class DetailPresenterTest {
     lateinit var apiRepository: ApiRepository
     private lateinit var presenter: DetailPresenter
 
+
     @Before
-    fun setUp(){
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
-        presenter = DetailPresenter(view, apiRepository,gson, TestContextProvider())
+        presenter = DetailPresenter(view, apiRepository, gson, TestContextProvider())
     }
 
     @Test
@@ -45,6 +45,7 @@ class DetailPresenterTest {
         val teams: MutableList<Team> = mutableListOf()
         val response = EventResponse(events)
         val response2 = TeamResponse(teams)
+        val response3 = TeamResponse(teams)
         val eventId = "579152"
         val homeId = "133935"
         val awayId = "133657"
@@ -62,12 +63,12 @@ class DetailPresenterTest {
         Mockito.`when`(gson.fromJson(apiRepository
                 .doRequest(TheSportDBApi.getTeamsById(awayId)),
                 TeamResponse::class.java
-        )).thenReturn(response2)
+        )).thenReturn(response3)
 
 
         presenter.getTeamDetail(eventId, homeId, awayId)
 
-        if(events.isNotEmpty()){
+        if (events.isNotEmpty()) {
             Mockito.verify(view).showLoading()
             Mockito.verify(view).showAwayImage(teams)
             Mockito.verify(view).showHomeImage(teams)

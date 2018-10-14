@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import onafy.footballmatchschedule.ModelDataClass.Event
 import onafy.footballmatchschedule.R
-import org.jetbrains.anko.*
+import org.jetbrains.anko.find
 
-class MainAdapter(private val context: Context, private val events: List<Event>,  val listener: (Event) -> Unit): RecyclerView.Adapter<EventViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)=
+class MainAdapter(private val context: Context, private val events: List<Event>, val listener: (Event) -> Unit) : RecyclerView.Adapter<EventViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             EventViewHolder(LayoutInflater.from(context).inflate(R.layout.eventlist_item, parent, false))
 
 
@@ -24,15 +24,14 @@ class MainAdapter(private val context: Context, private val events: List<Event>,
 
 }
 
-class EventViewHolder(view: View): RecyclerView.ViewHolder(view) {
+class EventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val homeName: TextView = view.find(R.id.homenameTV)
     private val eventDate: TextView = view.find(R.id.dateeventTV)
     private val homeScore: TextView = view.find(R.id.homescoreTV)
     private val awayScore: TextView = view.find(R.id.awayscoreTV)
     private val awayName: TextView = view.find(R.id.awaynameTV)
 
-    fun bindItem(events: Event, listener: (Event) -> Unit)
-    {
+    fun bindItem(events: Event, listener: (Event) -> Unit) {
         homeName.text = events.homeName
         Log.d(events.homeName, "HomeName")
         eventDate.text = events.eventDate

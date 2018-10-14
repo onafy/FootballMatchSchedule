@@ -1,10 +1,10 @@
 package onafy.footballmatchschedule.Features.Detail
 
 import android.database.sqlite.SQLiteConstraintException
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.bumptech.glide.Glide
@@ -15,12 +15,12 @@ import onafy.footballmatchschedule.DBLokal.Favorite
 import onafy.footballmatchschedule.DBLokal.database
 import onafy.footballmatchschedule.ModelDataClass.Event
 import onafy.footballmatchschedule.ModelDataClass.Team
+import onafy.footballmatchschedule.R
+import onafy.footballmatchschedule.R.color.colorAccent
 import onafy.footballmatchschedule.R.drawable.ic_add_to_favorites
 import onafy.footballmatchschedule.R.drawable.ic_added_to_favorites
 import onafy.footballmatchschedule.R.id.add_to_favorite
 import onafy.footballmatchschedule.R.menu.detail_menu
-import onafy.footballmatchschedule.R
-import onafy.footballmatchschedule.R.color.colorAccent
 import onafy.footballmatchschedule.Util.invisible
 import onafy.footballmatchschedule.Util.visible
 import org.jetbrains.anko.db.classParser
@@ -38,7 +38,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var eventId: String
     private var homeId: String = ""
-    private var awayId : String = ""
+    private var awayId: String = ""
     private var homeBadge: String = ""
     private var awayBadge: String = ""
     private lateinit var eventdetail: Event
@@ -69,9 +69,8 @@ class DetailActivity : AppCompatActivity(), DetailView {
     } //==========================================================================================
 
 
-
     // ============================= function ====================================================
-    private fun declaration(){
+    private fun declaration() {
         eventId = intent.getStringExtra("eventId")
         homeId = intent.getStringExtra("homeId")
         awayId = intent.getStringExtra("awayId")
@@ -83,7 +82,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
                 android.R.color.holo_red_light)
     }
 
-    private fun showActionBar(){
+    private fun showActionBar() {
         val actionbar = supportActionBar
         actionbar?.title = "Detail"
         actionbar?.setDisplayHomeAsUpEnabled(true)
@@ -119,8 +118,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
         homenameTV.text = data[0].homeName
         awaynameTV.text = data[0].awayName
 
-        if(data[0].homeGoalDetails !=null)
-        {
+        if (data[0].homeGoalDetails != null) {
             homescoreTV.text = data[0].homeScore
             awayscoreTV.text = data[0].awayScore
             homegoalsTV.text = data[0].homeGoalDetails
@@ -151,7 +149,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
     }
 
 
-    override fun onSupportNavigateUp() : Boolean{
+    override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
@@ -172,9 +170,11 @@ class DetailActivity : AppCompatActivity(), DetailView {
                 true
             }
             add_to_favorite -> {
-                if (isFavorite) removeFromFavorite() else addToFavorite()
-                isFavorite = !isFavorite
-                setFavorite()
+                if (::eventdetail.isInitialized) {
+                    if (isFavorite) removeFromFavorite() else addToFavorite()
+                    isFavorite = !isFavorite
+                    setFavorite()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -182,9 +182,9 @@ class DetailActivity : AppCompatActivity(), DetailView {
     }
 
 
-    private fun addToFavorite(){
-        try{
-            database.use{
+    private fun addToFavorite() {
+        try {
+            database.use {
                 insert(Favorite.TABLE_FAVORITE,
                         Favorite.EVENT_ID to eventdetail.eventId,
                         Favorite.HOME_NAME to eventdetail.homeName,
@@ -196,20 +196,20 @@ class DetailActivity : AppCompatActivity(), DetailView {
                         Favorite.AWAY_ID to eventdetail.awayId)
             }
             snackbar(swipeRefresh, "Added to Favorite").show()
-        } catch (e: SQLiteConstraintException){
+        } catch (e: SQLiteConstraintException) {
             snackbar(swipeRefresh, e.localizedMessage).show()
         }
     }
 
 
-    private fun removeFromFavorite(){
+    private fun removeFromFavorite() {
         try {
             database.use {
                 delete(Favorite.TABLE_FAVORITE, "(EVENT_ID = {eventId})",
                         "eventId" to eventId)
             }
             snackbar(swipeRefresh, "Removed to favorite").show()
-        } catch (e: SQLiteConstraintException){
+        } catch (e: SQLiteConstraintException) {
             snackbar(swipeRefresh, e.localizedMessage).show()
         }
     }
@@ -223,8 +223,8 @@ class DetailActivity : AppCompatActivity(), DetailView {
     }
 
 
-    private fun favoriteState(){
-        try{
+    private fun favoriteState() {
+        try {
             database.use {
                 val result = select(Favorite.TABLE_FAVORITE)
                         .whereArgs("(EVENT_ID = {eventId})",
@@ -232,8 +232,7 @@ class DetailActivity : AppCompatActivity(), DetailView {
                 val favorite = result.parseList(classParser<Favorite>())
                 if (!favorite.isEmpty()) isFavorite = true
             }
-        }
-        catch (e: SQLiteConstraintException){
+        } catch (e: SQLiteConstraintException) {
             snackbar(swipeRefresh, e.localizedMessage).show()
         }
 

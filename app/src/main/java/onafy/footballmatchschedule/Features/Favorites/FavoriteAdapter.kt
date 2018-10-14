@@ -12,8 +12,8 @@ import onafy.footballmatchschedule.R
 
 import org.jetbrains.anko.find
 
-class FavoriteAdapter (private val context: Context, private val favorite: List<Favorite>, val listener: (Favorite) -> Unit): RecyclerView.Adapter<FavoriteViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)=
+class FavoriteAdapter(private val context: Context, private val favorite: List<Favorite>, val listener: (Favorite) -> Unit) : RecyclerView.Adapter<FavoriteViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             FavoriteViewHolder(LayoutInflater.from(context).inflate(R.layout.favoritelist_item, parent, false))
 
 
@@ -25,7 +25,7 @@ class FavoriteAdapter (private val context: Context, private val favorite: List<
 
 }
 
-class FavoriteViewHolder(view: View): RecyclerView.ViewHolder(view) {
+class FavoriteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val homeName: TextView = view.find(R.id.homenameTV)
     private val eventDate: TextView = view.find(R.id.dateeventTV)
     private val homeScore: TextView = view.find(R.id.homescoreTV)

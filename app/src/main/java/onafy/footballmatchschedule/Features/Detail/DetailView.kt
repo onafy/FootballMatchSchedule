@@ -1,4 +1,5 @@
 package onafy.footballmatchschedule.Features.Detail
+
 import onafy.footballmatchschedule.ModelDataClass.Event
 import onafy.footballmatchschedule.ModelDataClass.Team
 

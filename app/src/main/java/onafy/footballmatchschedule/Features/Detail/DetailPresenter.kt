@@ -38,5 +38,5 @@ class DetailPresenter(private val view: DetailView,
             }
         }
     }
-    
+
 }
